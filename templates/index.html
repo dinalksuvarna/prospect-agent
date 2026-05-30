@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Prospect Research Agent</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: Arial, sans-serif; background: #f4f6f9; color: #333; }
+        header { background: #1a1a2e; color: white; padding: 20px 40px; }
+        header h1 { font-size: 24px; }
+        .container { max-width: 1000px; margin: 30px auto; padding: 0 20px; }
+
+        /* Enrich Section */
+        .card { background: white; border-radius: 10px; padding: 25px; margin-bottom: 25px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .card h2 { margin-bottom: 15px; color: #1a1a2e; }
+        .input-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
+        .input-row input { flex: 1; padding: 10px 15px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; min-width: 200px; }
+        .btn { padding: 10px 25px; background: #1a1a2e; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; }
+        .btn:hover { background: #16213e; }
+        .btn-outline { background: white; color: #1a1a2e; border: 2px solid #1a1a2e; }
+        .btn-outline:hover { background: #f0f0f0; }
+
+        /* Loading */
+        #loading { display: none; color: #666; margin-top: 10px; font-style: italic; }
+
+        /* Result Card */
+        #result-box { display: none; margin-top: 20px; background: #f9f9f9; border-left: 4px solid #1a1a2e; padding: 20px; border-radius: 6px; }
+        .field { margin-bottom: 12px; }
+        .field label { font-weight: bold; font-size: 13px; color: #555; display: block; margin-bottom: 3px; }
+        .field span { font-size: 14px; }
+        .tag { display: inline-block; background: #e8eaf6; color: #1a1a2e; padding: 3px 10px; border-radius: 20px; font-size: 12px; margin: 2px; }
+
+        /* Results Table */
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        th { background: #1a1a2e; color: white; padding: 10px; text-align: left; }
+        td { padding: 10px; border-bottom: 1px solid #eee; vertical-align: top; }
+        tr:hover { background: #f5f5f5; }
+        #results-box { display: none; margin-top: 15px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>🔍 Prospect Research Agent</h1>
+</header>
+
+<div class="container">
+
+    <!-- Enrich Section -->
+    <div class="card">
+        <h2>Enrich a Company</h2>
+        <div class="input-row">
+            <input type="text" id="website-name" placeholder="Website Name (e.g. Stripe)" />
+            <input type="text" id="url-input" placeholder="Company URL (e.g. https://stripe.com)" />
+            <button class="btn" onclick="enrichCompany()">🚀 Enrich</button>
+        </div>
+        <div id="loading">⏳ Scraping and analyzing... please wait</div>
+
+        <div id="result-box">
+            <div class="field"><label>Website Name</label><span id="r-website_name"></span></div>
+            <div class="field"><label>Company Name</label><span id="r-company_name"></span></div>
+            <div class="field"><label>Address</label><span id="r-address"></span></div>
+            <div class="field"><label>Phone</label><span id="r-mobile_number"></span></div>
+            <div class="field"><label>Emails</label><span id="r-mail"></span></div>
+            <div class="field"><label>Core Service</label><span id="r-core_service"></span></div>
+            <div class="field"><label>Target Customer</label><span id="r-target_customer"></span></div>
+            <div class="field"><label>Pain Point</label><span id="r-probable_pain_point"></span></div>
+            <div class="field"><label>Outreach Opener</label><span id="r-outreach_opener"></span></div>
+        </div>
+    </div>
+
+    <!-- Results Section -->
+    <div class="card">
+        <h2>All Enriched Companies</h2>
+        <button class="btn btn-outline" onclick="loadResults()">📋 Show All Results</button>
+        <div id="results-box">
+            <table id="results-table">
+                <thead>
+                    <tr>
+                        <th>Website</th>
+                        <th>Company</th>
+                        <th>Core Service</th>
+                        <th>Emails</th>
+                        <th>Phone</th>
+                        <th>Pain Point</th>
+                    </tr>
+                </thead>
+                <tbody id="results-body"></tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    async function enrichCompany() {
+        const url = document.getElementById("url-input").value.trim();
+        const websiteName = document.getElementById("website-name").value.trim();
+
+        if (!url) { alert("Please enter a URL"); return; }
+
+        // Show loading
+        document.getElementById("loading").style.display = "block";
+        document.getElementById("result-box").style.display = "none";
+
+        try {
+            const res = await fetch("/enrich", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ url, website_name: websiteName })
+            });
+            const data = await res.json();
+            displayResult(data);
+        } catch (err) {
+            alert("Error: " + err.message);
+        } finally {
+            document.getElementById("loading").style.display = "none";
+        }
+    }
+
+    function displayResult(data) {
+        document.getElementById("result-box").style.display = "block";
+        document.getElementById("r-website_name").textContent = data.website_name || "N/A";
+        document.getElementById("r-company_name").textContent = data.company_name || "N/A";
+        document.getElementById("r-address").textContent = data.address || "N/A";
+        document.getElementById("r-mobile_number").textContent = data.mobile_number || "N/A";
+        document.getElementById("r-core_service").textContent = data.core_service || "N/A";
+        document.getElementById("r-target_customer").textContent = data.target_customer || "N/A";
+        document.getElementById("r-probable_pain_point").textContent = data.probable_pain_point || "N/A";
+        document.getElementById("r-outreach_opener").textContent = data.outreach_opener || "N/A";
+
+        // Handle emails array
+        const mails = data.mail || [];
+        document.getElementById("r-mail").innerHTML = mails.length
+            ? mails.map(m => `<span class="tag">${m}</span>`).join("")
+            : "N/A";
+    }
+
+    async function loadResults() {
+        const res = await fetch("/results");
+        const data = await res.json();
+        const tbody = document.getElementById("results-body");
+        tbody.innerHTML = "";
+
+        if (data.length === 0) {
+            tbody.innerHTML = "<tr><td colspan='6'>No results yet.</td></tr>";
+        } else {
+            data.forEach(d => {
+                tbody.innerHTML += `<tr>
+                    <td>${d.website_name || ""}</td>
+                    <td>${d.company_name || ""}</td>
+                    <td>${d.core_service || ""}</td>
+                    <td>${(d.mail || []).join(", ") || "—"}</td>
+                    <td>${d.mobile_number || "—"}</td>
+                    <td>${d.probable_pain_point || ""}</td>
+                </tr>`;
+            });
+        }
+        document.getElementById("results-box").style.display = "block";
+    }
+</script>
+
+</body>
+</html>

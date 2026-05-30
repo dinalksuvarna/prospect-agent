@@ -1,0 +1,28 @@
+[
+  {
+    "website_name": "Stripe",
+    "company_name": "Stripe, Inc.",
+    "address": "354 Oyster Point Blvd, South San Francisco, CA 94080",
+    "mobile_number": "",
+    "mail": [
+      "support@stripe.com"
+    ],
+    "core_service": "Online payment processing for internet businesses",
+    "target_customer": "Startups, enterprises and online businesses",
+    "probable_pain_point": "Complex payment integration and global payment processing",
+    "outreach_opener": "Hi team, I noticed Stripe is leading online payments. I'd love to share how we can help streamline your payment infrastructure."
+  },
+  {
+    "website_name": "Notion",
+    "company_name": "Notion Labs, Inc.",
+    "address": "2300 Harrison St, San Francisco, CA 94110",
+    "mobile_number": "",
+    "mail": [
+      "team@makenotion.com"
+    ],
+    "core_service": "All-in-one workspace for notes, docs, and project management",
+    "target_customer": "Teams and individuals looking to organize their work",
+    "probable_pain_point": "Scattered tools and lack of unified workspace for collaboration",
+    "outreach_opener": "Hi team, I noticed Notion is redefining how teams collaborate. I'd love to share how we can help scale your user onboarding experience."
+  }
+]
